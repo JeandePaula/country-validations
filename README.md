@@ -175,9 +175,3 @@ php vendor/bin/phpunit
 
 ## License
 This library is open-sourced software licensed under the [MIT license](LICENSE).
-
----
-
-## Contact
-For any questions or support, please reach out to [Jean de Paula](mailto:seu-email@example.com).
-
