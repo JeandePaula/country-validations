@@ -25,12 +25,68 @@ The **Country Validations Library** is a powerful PHP package designed to valida
 ### Using Composer
 
 ```bash
-composer require country-validations/country-validations
+composer require jeandepaula/country-validations
 ```
 
 ### Requirements
 - PHP 7.4 or higher
 - Composer
+
+---
+
+## Integration with Laravel
+
+### Service Provider Registration (Optional)
+If needed, you can create a service provider to encapsulate the library.
+
+1. **Create a Service Provider**
+   ```php
+   php artisan make:provider CountryValidationsServiceProvider
+   ```
+
+2. **Register the Library in the Provider**
+   In the generated `CountryValidationsServiceProvider`:
+   ```php
+   <?php
+
+   namespace App\Providers;
+
+   use Illuminate\Support\ServiceProvider;
+   use CountryValidations\CountryValidator;
+
+   class CountryValidationsServiceProvider extends ServiceProvider
+   {
+       public function register()
+       {
+           $this->app->singleton('country-validator', function () {
+               return new CountryValidator();
+           });
+       }
+
+       public function boot()
+       {
+           //
+       }
+   }
+   ```
+
+3. **Add the Provider in `config/app.php`**
+   ```php
+   'providers' => [
+       // Other Service Providers...
+       App\Providers\CountryValidationsServiceProvider::class,
+   ],
+   ```
+
+4. **Using the Library in Controllers**
+   ```php
+   use Illuminate\Support\Facades\App;
+
+   $validator = App::make('country-validator');
+
+   // Validate CPF
+   $isValidCpf = $validator->brazil()->personal()->cpf('123.456.789-09');
+   ```
 
 ---
 
@@ -107,11 +163,9 @@ var_dump($usaValidator->personal()->driversLicense('A1234567', 'CA'));
 
 ---
 
-## Contributing
+## Testing
 
-Feel free to fork this repository and submit pull requests for new features, bug fixes, or documentation improvements.
-
-### Running Tests
+Run the tests using PHPUnit:
 
 ```bash
 php vendor/bin/phpunit
@@ -125,5 +179,5 @@ This library is open-sourced software licensed under the [MIT license](LICENSE).
 ---
 
 ## Contact
-For any questions or support, please reach out to [Your Name](mailto:your-email@example.com).
+For any questions or support, please reach out to [Jean de Paula](mailto:seu-email@example.com).
 
