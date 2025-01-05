@@ -1,0 +1,20 @@
+{
+    "autoload": {
+        "psr-4": {
+            "CountryValidations\\Brazil\\": "src/Brazil/",
+            "CountryValidations\\Usa\\": "src/Usa/",
+            "CountryValidations\\Canada\\": "src/Canada/",
+            "CountryValidations\\": "src/"
+        }
+    },
+    "require": {
+        "php": ">=7.4"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5"
+    },
+    "description": "Library for validating documents and data for Brazil, USA, and Canada.",
+    "name": "yourname/country-validations",
+    "type": "library",
+    "license": "MIT"
+}
