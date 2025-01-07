@@ -45,18 +45,58 @@ class Personal
     }
 
     /**
-     * Validates a Brazilian RG (Registro Geral) number.
+     * Validates a Brazilian RG (Registro Geral) number based on state rules.
      *
-     * Input format: XXXXXXXX-X or numeric-only string of 7 to 9 digits.
-     * Non-numeric characters will be removed before validation.
+     * Rules:
+     * - Removes non-numeric characters and checks for invalid letters.
+     * - Ensures the number of digits respects state-specific rules.
+     * - Validates that, if present, the letter "X" is the last character.
      *
      * @param string $rg The RG number to validate.
-     * @return bool True if the RG number is valid, false otherwise.
+     * @param string $state The state abbreviation (e.g., "SP", "RJ"). Default is "SP".
+     * @return bool True if the RG is valid, false otherwise.
      */
-    public function rg(string $rg): bool
+    function rg(string $rg, string $state = 'SP'): bool
     {
-        $rg = preg_replace('/[^0-9]/', '', $rg);
-        return preg_match('/^\d{7,9}$/', $rg) === 1;
+        // Step 1: Remove non-alphanumeric characters
+        $rg = preg_replace('/[^0-9A-Za-z]/', '', $rg);
+
+        // Check for invalid letters (anything other than "X")
+        if (preg_match('/[A-WY-Za-wy-z]/', $rg)) {
+            return false;
+        }
+
+        // Step 2: Map of state rules for RG lengths
+        $stateRules = [
+            'SP' => 9,  // São Paulo
+            'RJ' => 9,  // Rio de Janeiro
+            'MG' => 9,  // Minas Gerais
+            'RS' => 10, // Rio Grande do Sul
+            'PR' => 10, // Paraná
+            'SC' => 10, // Santa Catarina
+        ];
+
+        // Default rule for other states
+        $defaultRule = [7, 8];
+
+        // Determine the length rule based on the state
+        if (array_key_exists($state, $stateRules)) {
+            $length = $stateRules[$state];
+            if (strlen($rg) != $length && strlen($rg) != $length - 1) {
+                return false;
+            }
+        } else {
+            if (strlen($rg) < $defaultRule[0] || strlen($rg) > $defaultRule[1]) {
+                return false;
+            }
+        }
+
+        // Step 3: Ensure "X" is the last character if present
+        if (strpos($rg, 'X') !== false && substr($rg, -1) !== 'X') {
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -315,7 +355,8 @@ class Personal
      */
     public function phone(string $phone): bool
     {
-        return Helpers::phone($phone);
+        $helpers = new Helpers();
+        return $helpers->phone($phone);
     }
 
     /**
@@ -329,7 +370,8 @@ class Personal
      */
     public function phoneWithoutDDD(string $phone): bool
     {
-        return Helpers::phoneWithoutDDD($phone);
+        $helpers = new Helpers();
+        return $helpers->phoneWithoutDDD($phone);
     }
 
 }

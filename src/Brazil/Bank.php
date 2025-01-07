@@ -188,7 +188,8 @@ class Bank
         );
 
         // Calculate mod 97
-        return Helpers::genericBcmod($numericIban) === 1;
+        $helpers = new Helpers();
+        return $helpers->genericBcmod($numericIban) === 1;
     }
 
 

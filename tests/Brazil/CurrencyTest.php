@@ -14,7 +14,8 @@ class CurrencyTest extends TestCase
      */
     protected function setUp(): void
     {
-        $this->currencyValidator = CountryValidator::brazil()->currency();
+        $validator = new CountryValidator();
+        $this->currencyValidator = $validator->brazil()->currency();
     }
 
     /**

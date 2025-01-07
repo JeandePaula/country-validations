@@ -86,7 +86,8 @@ class Company
      */
     public function phone(string $phone): bool
     {
-        return Helpers::phone($phone);
+        $helpers = new Helpers();
+        return $helpers->phone($phone);
     }
 
     /**
@@ -98,7 +99,8 @@ class Company
      */
     public function phoneWithoutDDD(string $phone): bool
     {
-        return Helpers::phoneWithoutDDD($phone);
+        $helpers = new Helpers();
+        return $helpers->phoneWithoutDDD($phone);
     }
 
     /**

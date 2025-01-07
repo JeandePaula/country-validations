@@ -14,7 +14,8 @@ class VehicleTest extends TestCase
      */
     protected function setUp(): void
     {
-        $this->vehicleValidator = CountryValidator::brazil()->vehicle();
+        $validator = new CountryValidator();
+        $this->vehicleValidator = $validator->brazil()->vehicle();
     }
 
     /**

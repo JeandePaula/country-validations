@@ -14,7 +14,8 @@ class PersonalTest extends TestCase
      */
     protected function setUp(): void
     {
-        $this->personalValidator = CountryValidator::brazil()->personal();
+        $validator = new CountryValidator();
+        $this->personalValidator =$validator->brazil()->personal();
     }
 
     /**
@@ -28,16 +29,30 @@ class PersonalTest extends TestCase
         $this->assertFalse($this->personalValidator->cpf('123.456.789-00')); // Invalid CPF
     }
 
-    /**
-     * Tests if valid RG numbers are correctly validated.
-     */
-    public function testRg()
-    {
-        $this->assertTrue($this->personalValidator->rg('12345678'));
-        $this->assertTrue($this->personalValidator->rg('123456789'));
-        $this->assertFalse($this->personalValidator->rg('1234')); // Too short
-        $this->assertFalse($this->personalValidator->rg('1234567890')); // Too long
-    }
+   /**
+ * Tests if valid and invalid RG numbers are correctly validated based on state rules.
+ */
+public function testRg()
+{
+    // Valid RG numbers for specific states
+    $this->assertTrue($this->personalValidator->rg('12345678', 'SP')); // Valid RG for SP: 8 digits
+    $this->assertTrue($this->personalValidator->rg('123456789', 'SP')); // Valid RG for SP: 9 digits
+    $this->assertTrue($this->personalValidator->rg('123456789', 'RJ')); // Valid RG for RJ: 9 digits
+    $this->assertTrue($this->personalValidator->rg('1234567890', 'RS')); // Valid RG for RS: 10 digits
+    $this->assertTrue($this->personalValidator->rg('1234567X', 'SP')); // Valid RG for SP: 7 digits with letter X as check digit
+    $this->assertTrue($this->personalValidator->rg('12345678X', 'SP')); // Valid RG for SP: 8 digits with letter X as check digit
+    $this->assertTrue($this->personalValidator->rg('12345678', 'BA')); // Valid RG for BA: 8 digits (default rule)
+
+    // Invalid RG numbers
+    $this->assertFalse($this->personalValidator->rg('1234', 'SP')); // Invalid RG: Too short for SP (less than 7 digits)
+    $this->assertFalse($this->personalValidator->rg('1234567890', 'SP')); // Invalid RG: Too long for SP (more than 9 digits)
+    $this->assertFalse($this->personalValidator->rg('1234567A', 'SP')); // Invalid RG: Invalid check digit (not X)
+    $this->assertFalse($this->personalValidator->rg('12345678901', 'RS')); // Invalid RG: Too long for RS
+    $this->assertFalse($this->personalValidator->rg('', 'SP')); // Invalid RG: Empty string
+    $this->assertFalse($this->personalValidator->rg('1234-567', 'SP')); // Invalid RG: Invalid format with special characters
+    $this->assertFalse($this->personalValidator->rg('1234567890', 'BA')); // Invalid RG for BA: Too long (default rule is 7-8 digits)
+}
+
 
     /**
      * Tests if valid CNS numbers are correctly validated.

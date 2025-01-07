@@ -14,7 +14,8 @@ class CompanyTest extends TestCase
      */
     protected function setUp(): void
     {
-        $this->companyValidator = CountryValidator::brazil()->company();
+        $validator = new CountryValidator();
+        $this->companyValidator = $validator->brazil()->company();
     }
 
     /**

@@ -14,7 +14,8 @@ class BankTest extends TestCase
      */
     protected function setUp(): void
     {
-        $this->bankValidator = CountryValidator::brazil()->bank();
+        $validator = new CountryValidator();
+        $this->bankValidator =  $validator->brazil()->bank();
     }
 
     /**

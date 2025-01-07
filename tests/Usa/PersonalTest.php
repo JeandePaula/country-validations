@@ -14,7 +14,8 @@ class PersonalTest extends TestCase
      */
     protected function setUp(): void
     {
-        $this->personalValidator = CountryValidator::usa()->personal();
+        $validator = new CountryValidator();
+        $this->personalValidator = $validator->usa()->personal();
     }
 
     /**
