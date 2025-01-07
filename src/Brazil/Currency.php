@@ -10,11 +10,16 @@ class Currency
     {
         $this->config = $config;
     }
-                /**
-     * Validates if the format is in Brazilian currency (e.g., R$ 1.234,56).
-     * Removes unnecessary whitespace before validation.
+
+    /**
+     * Validates if the format matches Brazilian currency (e.g., R$ 1.234,56).
+     * 
+     * Input format:
+     * - May include the "R$" prefix (optional).
+     * - Must follow the Brazilian numeric format: groups of thousands separated by dots and decimals separated by a comma.
+     * 
      * @param string $value Currency value to validate.
-     * @return bool True if valid, false otherwise.
+     * @return bool True if the format is valid, false otherwise.
      */
     public function brlFormat(string $value): bool
     {
@@ -27,7 +32,10 @@ class Currency
 
     /**
      * Validates exchange rates or numeric quotations.
-     * Removes any extra whitespace before validation.
+     * 
+     * Input format:
+     * - A positive decimal number with up to 4 decimal places (e.g., 3.4567 or 4.00).
+     * 
      * @param string $rate Exchange rate to validate.
      * @return bool True if valid, false otherwise.
      */
@@ -39,8 +47,9 @@ class Currency
 
     /**
      * Validates if a monetary value is positive.
+     * 
      * @param float $amount Monetary value to validate.
-     * @return bool True if positive, false otherwise.
+     * @return bool True if the value is greater than 0, false otherwise.
      */
     public function positiveAmount(float $amount): bool
     {
@@ -48,10 +57,11 @@ class Currency
     }
 
     /**
-     * Validates if a monetary value does not exceed a given limit.
+     * Validates if a monetary value does not exceed a specified limit.
+     * 
      * @param float $amount Monetary value to validate.
      * @param float $limit Maximum allowed value.
-     * @return bool True if within the limit, false otherwise.
+     * @return bool True if the value is within the limit, false otherwise.
      */
     public function withinLimit(float $amount, float $limit): bool
     {
@@ -59,8 +69,12 @@ class Currency
     }
 
     /**
-     * Validates if the number is in Brazilian numeric format (e.g., 1.234,56).
-     * Removes unnecessary whitespace before validation.
+     * Validates if a number matches the Brazilian numeric format (e.g., 1.234,56).
+     * 
+     * Input format:
+     * - Groups of thousands separated by dots.
+     * - Decimals separated by a comma.
+     * 
      * @param string $number Numeric string to validate.
      * @return bool True if valid, false otherwise.
      */
@@ -72,7 +86,11 @@ class Currency
 
     /**
      * Converts a Brazilian formatted numeric string to a float.
-     * Removes unnecessary whitespace and normalizes separators.
+     * 
+     * Conversion rules:
+     * - Removes dots used as thousand separators.
+     * - Replaces commas with dots to standardize decimal notation.
+     * 
      * @param string $number Numeric string in Brazilian format.
      * @return float Converted float value.
      */
@@ -83,9 +101,10 @@ class Currency
     }
 
     /**
-     * Validates if a value is a valid percentage (0 to 100).
+     * Validates if a value is a valid percentage (0 to 100 inclusive).
+     * 
      * @param float $percentage Percentage value to validate.
-     * @return bool True if valid, false otherwise.
+     * @return bool True if the value is between 0 and 100, false otherwise.
      */
     public function percentage(float $percentage): bool
     {
@@ -94,6 +113,10 @@ class Currency
 
     /**
      * Validates if a number has up to two decimal places.
+     * 
+     * Input format:
+     * - A positive decimal number with at most 2 decimal places (e.g., 12.34 or 45).
+     * 
      * @param float $number Number to validate.
      * @return bool True if valid, false otherwise.
      */
@@ -104,10 +127,11 @@ class Currency
 
     /**
      * Validates if a monetary value is within a specified range.
+     * 
      * @param float $amount Monetary value to validate.
      * @param float $min Minimum allowed value.
      * @param float $max Maximum allowed value.
-     * @return bool True if within range, false otherwise.
+     * @return bool True if the value is between the minimum and maximum, inclusive, false otherwise.
      */
     public function amountInRange(float $amount, float $min, float $max): bool
     {

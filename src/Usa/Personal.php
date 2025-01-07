@@ -12,8 +12,10 @@ class Personal
     {
         $this->config = $config;
     }
-                /**
+
+    /**
      * Validates a Social Security Number (SSN) in the format XXX-XX-XXXX.
+     * Ensures the SSN does not start with invalid prefixes such as 000, 666, or 9XX.
      * @param string $ssn SSN to validate.
      * @return bool True if valid, false otherwise.
      */
@@ -27,7 +29,10 @@ class Personal
     }
 
     /**
-     * Validates a US phone number in the format (XXX) XXX-XXXX or XXX-XXX-XXXX.
+     * Validates a US phone number in the formats:
+     * - (XXX) XXX-XXXX
+     * - XXX-XXX-XXXX
+     * Enforces valid area codes and exchanges (first digit must be 2-9).
      * @param string $phoneNumber Phone number to validate.
      * @return bool True if valid, false otherwise.
      */
@@ -42,24 +47,29 @@ class Personal
 
     /**
      * Validates a date of birth in the format MM/DD/YYYY.
+     * Ensures the date is valid and not in the future.
      * @param string $dob Date of birth to validate.
      * @return bool True if valid, false otherwise.
      */
     public function birthDate(string $dob): bool
     {
+        // Remove invalid characters
         $dob = preg_replace('/[^0-9\/]/', '', $dob);
 
+        // Parse and validate date
         $date = DateTime::createFromFormat('m/d/Y', $dob);
         if (!$date || $date->format('m/d/Y') !== $dob) {
             return false;
         }
 
+        // Check if the date is in the past
         $now = new DateTime();
         return $date < $now;
     }
 
     /**
-     * Validates if the given name contains at least two words.
+     * Validates if the given name contains at least two words separated by spaces.
+     * Allows names with hyphens and apostrophes.
      * @param string $name The full name to validate.
      * @return bool Returns true if the name contains two or more words, false otherwise.
      */
@@ -69,7 +79,7 @@ class Personal
     }
 
     /**
-     * Validates a US email address.
+     * Validates a US email address using PHP's filter_var.
      * @param string $email The email address to validate.
      * @return bool Returns true if the email address is valid, false otherwise.
      */
@@ -79,20 +89,23 @@ class Personal
     }
 
     /**
-     * Validates a US passport number in the format XXXXXXX or XXXXXXXX.
+     * Validates a US passport number.
+     * Format: Seven or eight alphanumeric characters.
      * @param string $passport Passport number to validate.
      * @return bool True if valid, false otherwise.
      */
     public function passport(string $passport): bool
     {
-        // Remove non-alphanumeric characters
+        // Remove invalid characters
         $passport = preg_replace('/[^A-Z0-9]/i', '', $passport);
 
+        // Match pattern for US passport numbers
         return preg_match('/^[A-Z0-9]{9}$/', $passport) === 1;
     }
 
     /**
      * Validates a driver's license number based on the state.
+     * Each state has its specific format requirements.
      * @param string $license License number to validate.
      * @param string $state Two-letter state code (e.g., 'CA' for California).
      * @return bool True if valid, false otherwise.

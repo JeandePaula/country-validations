@@ -6,57 +6,68 @@ class Validator
 {
     private $config;
 
+    /**
+     * Initializes the Validator class with optional configuration.
+     *
+     * @param array $config Optional configuration settings for the validator.
+     */
     public function __construct($config = [])
     {
         $this->config = $config;
     }
-                /**
-     * Returns an instance of BrazilBank.
+
+    /**
+     * Creates and returns an instance of the BrazilBank class.
+     * This class provides methods for validating bank-related data specific to Brazil.
      *
-     * @return Bank
+     * @return Bank Instance of BrazilBank.
      */
     public function bank(): Bank
     {
-        return new Bank();
+        return new Bank($this->config);
     }
 
     /**
-     * Returns an instance of BrazilCompany.
+     * Creates and returns an instance of the BrazilCompany class.
+     * This class provides methods for validating company-related data specific to Brazil.
      *
-     * @return Company
+     * @return Company Instance of BrazilCompany.
      */
     public function company(): Company
     {
-        return new Company();
+        return new Company($this->config);
     }
 
     /**
-     * Returns an instance of BrazilCurrency.
+     * Creates and returns an instance of the BrazilCurrency class.
+     * This class provides methods for currency-related validations specific to Brazil.
      *
-     * @return Currency
+     * @return Currency Instance of BrazilCurrency.
      */
     public function currency(): Currency
     {
-        return new Currency();
+        return new Currency($this->config);
     }
 
     /**
-     * Returns an instance of BrazilPersonal.
+     * Creates and returns an instance of the BrazilPersonal class.
+     * This class provides methods for validating personal data specific to Brazil.
      *
-     * @return Personal
+     * @return Personal Instance of BrazilPersonal.
      */
     public function personal(): Personal
     {
-        return new Personal();
+        return new Personal($this->config);
     }
 
     /**
-     * Returns an instance of BrazilVehicle.
+     * Creates and returns an instance of the BrazilVehicle class.
+     * This class provides methods for validating vehicle-related data specific to Brazil.
      *
-     * @return Vehicle
+     * @return Vehicle Instance of BrazilVehicle.
      */
     public function vehicle(): Vehicle
     {
-        return new Vehicle();
+        return new Vehicle($this->config);
     }
 }

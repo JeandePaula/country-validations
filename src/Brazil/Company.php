@@ -10,7 +10,7 @@ class Company
     {
         $this->config = $config;
     }
-    
+
     /**
      * Validates a Brazilian CNPJ (National Registry of Legal Entities) number.
      *
@@ -46,7 +46,7 @@ class Company
         $multipliers1 = [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
         $multipliers2 = [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
 
-        // Calculate the first check digit
+        // Calculate the first verification digit
         $sum = 0;
         for ($i = 0; $i < 12; $i++) {
             $sum += $cnpj[$i] * $multipliers1[$i];
@@ -56,7 +56,7 @@ class Company
             return false;
         }
 
-        // Calculate the second check digit
+        // Calculate the second verification digit
         $sum = 0;
         for ($i = 0; $i < 13; $i++) {
             $sum += $cnpj[$i] * $multipliers2[$i];
@@ -67,8 +67,10 @@ class Company
 
     /**
      * Validates a Brazilian corporate name.
-     * Input format: Any alphanumeric string with at least 5 characters.
      * 
+     * Input format: Any alphanumeric string with at least 5 characters.
+     * The name may include letters, numbers, spaces, and basic punctuation.
+     *
      * @param string $name The corporate name to validate.
      * @return bool Returns true if the name is valid, false otherwise.
      */
@@ -79,8 +81,9 @@ class Company
 
     /**
      * Validates a Brazilian corporate phone number.
-     * Input format: (XX) XXXXX-XXXX or XXXXXXXXXX (digits only).
      * 
+     * Input format: (XX) XXXXX-XXXX or XXXXXXXXXX (digits only).
+     *
      * @param string $phone The phone number to validate.
      * @return bool Returns true if the phone number is valid, false otherwise.
      */
@@ -92,8 +95,9 @@ class Company
 
     /**
      * Validates if a Brazilian corporate phone number is without DDD (area code).
-     * Input format: XXXXX-XXXX or XXXXXXXX (digits only).
      * 
+     * Input format: XXXXX-XXXX or XXXXXXXX (digits only).
+     *
      * @param string $phone The phone number to validate.
      * @return bool Returns true if the phone number is without DDD, false otherwise.
      */
@@ -105,8 +109,9 @@ class Company
 
     /**
      * Validates a Brazilian corporate email address.
-     * Input format: A valid email address (e.g., example@domain.com).
      * 
+     * Input format: A valid email address (e.g., example@domain.com).
+     *
      * @param string $email The email address to validate.
      * @return bool Returns true if the email address is valid, false otherwise.
      */
@@ -117,15 +122,15 @@ class Company
 
     /**
      * Validates a Brazilian state registration (Inscrição Estadual) number.
+     * 
      * Input format: A numeric string between 9 and 14 digits.
      * Non-numeric characters will be removed before validation.
-     * 
+     *
      * @param string $stateRegistration The state registration number to validate.
      * @return bool Returns true if the state registration number is valid, false otherwise.
      */
     public function stateRegistration(string $stateRegistration): bool
     {
-        // Remove non-numeric characters
         $stateRegistration = preg_replace('/[^0-9]/', '', $stateRegistration);
 
         return preg_match('/^\d{9,14}$/', $stateRegistration) === 1;
@@ -133,15 +138,15 @@ class Company
 
     /**
      * Validates a Brazilian NIRE (Número de Identificação do Registro de Empresas).
+     * 
      * Input format: A numeric string of exactly 11 digits.
      * Non-numeric characters will be removed before validation.
-     * 
+     *
      * @param string $nire The NIRE number to validate.
      * @return bool Returns true if the NIRE number is valid, false otherwise.
      */
     public function nire(string $nire): bool
     {
-        // Remove non-numeric characters
         $nire = preg_replace('/[^0-9]/', '', $nire);
 
         return preg_match('/^\d{11}$/', $nire) === 1;

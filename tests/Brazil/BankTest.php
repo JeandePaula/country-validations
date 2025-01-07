@@ -98,13 +98,27 @@ class BankTest extends TestCase
     }
 
     /**
-     * Tests if valid ISPB codes are correctly validated.
+     * Tests if valid and invalid ISPB codes are correctly validated.
      */
     public function testIspb()
     {
-        $this->assertTrue($this->bankValidator->ispb('12345678'));
-        $this->assertFalse($this->bankValidator->ispb('1234567'));
-        $this->assertFalse($this->bankValidator->ispb('123456789'));
+        // Valid ISPB codes
+        $this->assertTrue($this->bankValidator->ispb('00000000')); // BCO DO BRASIL S.A.
+        $this->assertTrue($this->bankValidator->ispb('00000208')); // BRB - BCO DE BRASILIA S.A.
+        $this->assertTrue($this->bankValidator->ispb('00122327')); // SANTINVEST S.A. - CFI
+        $this->assertTrue($this->bankValidator->ispb('00204963')); // CCR SEARA
+        $this->assertTrue($this->bankValidator->ispb('00250699')); // AGK CC S.A.
+        $this->assertTrue($this->bankValidator->ispb('00315557')); // UNICRED DO BRASIL
+        $this->assertTrue($this->bankValidator->ispb('00360305')); // CAIXA ECONOMICA FEDERAL
+        $this->assertTrue($this->bankValidator->ispb('00416968')); // BANCO INTER
+
+        // Invalid ISPB codes
+        $this->assertFalse($this->bankValidator->ispb('12345678')); // Not in the list
+        $this->assertFalse($this->bankValidator->ispb('1234567'));  // Too short
+        $this->assertFalse($this->bankValidator->ispb('123456789')); // Too long
+        $this->assertFalse($this->bankValidator->ispb('ABCDEFGH')); // Contains invalid characters
+        $this->assertFalse($this->bankValidator->ispb('0036030A')); // Contains non-numeric characters
+        $this->assertFalse($this->bankValidator->ispb(''));          // Empty string
     }
 
     /**

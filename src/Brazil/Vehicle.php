@@ -10,13 +10,18 @@ class Vehicle
     {
         $this->config = $config;
     }
-                /**
+    
+    /**
      * Validates Brazilian vehicle plate format.
      *
-     * Input format:
-     * - Standard plates: 3 letters followed by 4 digits (e.g., ABC1234).
-     * - Mercosul plates: 3 letters, 1 digit, 1 letter, 2 digits (e.g., ABC1D23).
-     * Non-alphanumeric characters will be removed before validation.
+     * This method validates vehicle plates according to Brazilian standards:
+     * - **Standard plates**: 3 letters followed by 4 digits (e.g., `ABC1234`).
+     * - **Mercosul plates**: 3 letters, 1 digit, 1 letter, 2 digits (e.g., `ABC1D23`).
+     * 
+     * Validation process:
+     * - Removes any non-alphanumeric characters.
+     * - Converts the input to uppercase for uniformity.
+     * - Matches the cleaned input against the predefined patterns for standard and Mercosul plates.
      *
      * @param string $plate The vehicle plate to validate.
      * @return bool True if the plate format is valid, false otherwise.
@@ -31,17 +36,18 @@ class Vehicle
     }
 
     /**
-     * Validate a Brazilian RENAVAM (National Registry of Motor Vehicles) number.
+     * Validates a Brazilian RENAVAM (National Registry of Motor Vehicles) number.
      *
-     * This function checks if the provided RENAVAM number is valid by performing
-     * the following steps:
-     * - Removes any non-numeric characters.
-     * - Ensures the length is exactly 11 digits and not all zeros.
-     * - Extracts the base number and check digit.
-     * - Reverses the base number.
-     * - Calculates a weighted sum using predefined multipliers.
-     * - Computes the expected check digit based on the weighted sum.
-     * - Compares the expected check digit with the actual check digit.
+     * This method ensures that a provided RENAVAM number is valid by:
+     * - Removing any non-numeric characters.
+     * - Checking that the number is exactly 11 digits and not all zeros.
+     * - Reversing the base number (first 10 digits).
+     * - Calculating a weighted sum using predefined multipliers.
+     * - Computing and comparing the check digit with the last digit of the RENAVAM.
+     *
+     * Example:
+     * Input: `12345678901`
+     * Validation: True if the check digit matches the calculated one.
      *
      * @param string $renavam The RENAVAM number to validate.
      * @return bool True if the RENAVAM number is valid, false otherwise.
@@ -51,92 +57,89 @@ class Vehicle
         // Remove non-numeric characters
         $renavam = preg_replace('/[^0-9]/', '', $renavam);
 
-        // Check length and disallow all zeros
+        // Validate length and check for all zeros
         if (strlen($renavam) !== 11 || $renavam === '00000000000') {
             return false;
         }
 
-        // Extract the base number and check digit
         $base = substr($renavam, 0, 10);
         $checkDigit = (int)$renavam[10];
-
-        // Reverse the base number
         $reversedBase = strrev($base);
 
-        // Define multipliers
         $multipliers = [2, 3, 4, 5, 6, 7, 8, 9];
-
-        // Calculate the weighted sum
         $sum = 0;
-        for ($i = 0; $i < 10; $i++) {
-            $sum += (int)$reversedBase[$i] * $multipliers[$i % 8];
+
+        foreach (str_split($reversedBase) as $i => $digit) {
+            $sum += (int)$digit * $multipliers[$i % 8];
         }
 
-        // Calculate the expected check digit
         $remainder = $sum % 11;
         $expectedCheckDigit = $remainder < 2 ? 0 : 11 - $remainder;
 
-        // Return validation result
         return $checkDigit === $expectedCheckDigit;
     }
 
     /**
      * Validates a Brazilian vehicle chassis (VIN) number.
      *
-     * This function checks the validity of a given chassis number by performing the following steps:
-     * 1. Converts the chassis number to uppercase and removes any whitespace.
-     * 2. Checks the length of the chassis number and ensures it does not contain forbidden characters (I, O, Q).
-     * 3. Maps each character of the chassis number to its corresponding value.
-     * 4. Calculates the weighted sum of the mapped values.
-     * 5. Computes the expected check digit based on the weighted sum.
-     * 6. Validates the check digit against the 9th position of the chassis number.
+     * This method validates a Vehicle Identification Number (VIN) by:
+     * - Removing any whitespace and converting the input to uppercase.
+     * - Ensuring the VIN is exactly 17 characters long and does not contain invalid characters (`I`, `O`, `Q`).
+     * - Mapping each character to its numeric value based on predefined rules.
+     * - Calculating a weighted sum of the mapped values.
+     * - Comparing the computed check digit with the 9th position of the VIN.
+     *
+     * Example:
+     * Input: `1HGCM82633A123456`
+     * Validation: True if the check digit matches the calculated one.
      *
      * @param string $chassis The chassis number to validate.
      * @return bool True if the chassis number is valid, false otherwise.
      */
     public function chassis(string $chassis): bool
     {
-        // Convert to uppercase and remove whitespace
         $chassis = strtoupper(trim($chassis));
 
-        // Check length and forbidden characters (I, O, Q)
         if (strlen($chassis) !== 17 || preg_match('/[IOQ]/', $chassis) || !preg_match('/^[A-Z0-9]+$/', $chassis)) {
             return false;
         }
 
-        // VIN character-to-value mapping
         $map = array_merge(array_combine(range('A', 'H'), range(1, 8)), [
             'J' => 1, 'K' => 2, 'L' => 3, 'M' => 4, 'N' => 5,
             'P' => 7, 'R' => 9, 'S' => 2, 'T' => 3, 'U' => 4,
             'V' => 5, 'W' => 6, 'X' => 7, 'Y' => 8, 'Z' => 9,
         ]);
 
-        // VIN weights
         $weights = [8, 7, 6, 5, 4, 3, 2, 10, 0, 9, 8, 7, 6, 5, 4, 3, 2];
 
-        // Map each character to its value
         $values = array_map(function ($char) use ($map) {
             return is_numeric($char) ? (int)$char : $map[$char] ?? 0;
         }, str_split($chassis));
 
-        // Calculate the weighted sum
         $sum = 0;
         foreach ($values as $i => $value) {
             $sum += $value * $weights[$i];
         }
 
-        // Calculate the expected check digit
         $remainder = $sum % 11;
         $expectedCheckDigit = $remainder === 10 ? 'X' : (string)$remainder;
 
-        // Validate the check digit (position 9 in VIN)
         return $chassis[8] === $expectedCheckDigit;
     }
 
     /**
      * Validates a vehicle category according to Brazilian standards.
      *
-     * Input format: A single letter representing the vehicle category (e.g., A, B, C, D, E).
+     * This method ensures the provided vehicle category is one of the following:
+     * - `A`: Motorcycles
+     * - `B`: Passenger vehicles
+     * - `C`: Cargo vehicles
+     * - `D`: Passenger vehicles for public transport
+     * - `E`: Articulated vehicles or those requiring special training
+     *
+     * Validation process:
+     * - Converts the input to uppercase.
+     * - Checks if the input matches one of the predefined valid categories.
      *
      * @param string $category The vehicle category to validate.
      * @return bool True if the category is valid, false otherwise.
@@ -146,5 +149,4 @@ class Vehicle
         $validCategories = ['A', 'B', 'C', 'D', 'E'];
         return in_array(strtoupper($category), $validCategories, true);
     }
-
 }
