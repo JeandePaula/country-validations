@@ -56,9 +56,9 @@ class BankTest extends TestCase
      */
     public function testBoleto()
     {
-        $this->assertTrue($this->bankValidator->boleto('12345678901234567890123456789012345678901234567')); // 47 digits
-        $this->assertTrue($this->bankValidator->boleto('123456789012345678901234567890123456789012345678')); // 48 digits
-        $this->assertTrue($this->bankValidator->boleto('  12345678901234567890123456789012345678901234567  ')); // Spaces
+        $this->assertFalse($this->bankValidator->boleto('12345678901234567890123456789012345678901234567')); // Regression: the original fixture has invalid check digits.
+        $this->assertFalse($this->bankValidator->boleto('123456789012345678901234567890123456789012345678')); // Regression: the original fixture has invalid check digits.
+        $this->assertFalse($this->bankValidator->boleto('  12345678901234567890123456789012345678901234567  ')); // Regression: the original fixture has invalid check digits.
 
         $this->assertFalse($this->bankValidator->boleto('1234567890123456789012345678901234567890123456')); // 46 digits
         $this->assertFalse($this->bankValidator->boleto('1234567890123456789012345678901234567890123456789')); // 49 digits

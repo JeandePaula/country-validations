@@ -9,22 +9,30 @@
             "email": "jean.depaula@live.com"
         }
     ],
-    "keywords": ["validation", "country", "cpf", "cnpj", "sin", "ssn", "banking", "vehicle"],
+    "keywords": [
+        "validation",
+        "country",
+        "cpf",
+        "cnpj",
+        "sin",
+        "ssn",
+        "banking",
+        "vehicle"
+    ],
     "support": {
         "issues": "https://github.com/JeandePaula/country-validations/issues",
         "source": "https://github.com/JeandePaula/country-validations"
     },
     "require": {
-        "php": "^7.4 || ^8.0"
+        "php": "^7.4 || ^8.0",
+        "ext-ctype": "*",
+        "ext-filter": "*"
     },
     "require-dev": {
         "phpunit/phpunit": "^9.5"
     },
     "autoload": {
         "psr-4": {
-            "CountryValidations\\Brazil\\": "src/Brazil/",
-            "CountryValidations\\Usa\\": "src/Usa/",
-            "CountryValidations\\Canada\\": "src/Canada/",
             "CountryValidations\\": "src/"
         }
     },
@@ -32,5 +40,19 @@
         "psr-4": {
             "Tests\\": "tests/"
         }
+    },
+    "config": {
+        "platform": {
+            "php": "7.4.33"
+        },
+        "sort-packages": true
+    },
+    "scripts": {
+        "test": "@php vendor/bin/phpunit",
+        "lint": "@php tools/lint.php",
+        "check": [
+            "@lint",
+            "@test"
+        ]
     }
 }

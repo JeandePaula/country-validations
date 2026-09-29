@@ -2,6 +2,8 @@
 
 namespace CountryValidations\Brazil;
 
+use CountryValidations\Support\Checksum;
+
 class Helpers
 {
     private $config;
@@ -19,8 +21,14 @@ class Helpers
      */
     public function phone(string $phone): bool
     {
+        if (substr($phone, 0, 3) === '+55') {
+            $phone = substr($phone, 3);
+            if (substr($phone, 0, 1) === ' ') {
+                $phone = substr($phone, 1);
+            }
+        }
         // Validate mask format before cleaning
-        if (!preg_match('/^\(?\d{2}\)? ?\d{4,5}-\d{4}$/', $phone) && !preg_match('/^\d{10,11}$/', $phone)) {
+        if (!preg_match('/\A(?:\([0-9]{2}\)|[0-9]{2}) ?[0-9]{4,5}-[0-9]{4}\z/', $phone) && !preg_match('/^\d{10,11}$/D', $phone)) {
             return false;
         }
     
@@ -60,12 +68,12 @@ class Helpers
     
         if ($length === 10) {
             // Landline: 4 digits + 4 digits, starting with 2-8
-            if (!preg_match('/^[2-8]\d{3}\d{4}$/', $localNumber)) {
+            if (!preg_match('/^[2-8]\d{3}\d{4}$/D', $localNumber)) {
                 return false;
             }
         } elseif ($length === 11) {
             // Mobile: 5 digits + 4 digits, starting with 9
-            if (!preg_match('/^9\d{4}\d{4}$/', $localNumber)) {
+            if (!preg_match('/^9\d{4}\d{4}$/D', $localNumber)) {
                 return false;
             }
         }
@@ -85,7 +93,7 @@ class Helpers
     public function phoneWithoutDDD(string $phone): bool
     {
         // Validate the mask before cleaning
-        if (!preg_match('/^\d{4,5}-\d{4}$/', $phone) && !preg_match('/^\d{8,9}$/', $phone)) {
+        if (!preg_match('/^\d{4,5}-\d{4}$/D', $phone) && !preg_match('/^\d{8,9}$/D', $phone)) {
             return false;
         }
 
@@ -93,49 +101,43 @@ class Helpers
         $phone = preg_replace('/[^0-9]/', '', $phone);
 
         // Check for valid length: 8 (landline) or 9 (mobile) digits without DDD
-        if (!preg_match('/^\d{8,9}$/', $phone)) {
+        if (!preg_match('/^\d{8,9}$/D', $phone)) {
             return false;
         }
 
         // Validate the format: landline (8 digits, starting with 2-8) or mobile (9 digits, starting with 9)
         if (strlen($phone) === 8) {
             // Landline: 4 digits + 4 digits, starting with 2-8
-            return preg_match('/^[2-8]\d{7}$/', $phone) === 1;
+            return preg_match('/^[2-8]\d{7}$/D', $phone) === 1;
         } elseif (strlen($phone) === 9) {
             // Mobile: 5 digits + 4 digits, starting with 9
-            return preg_match('/^9\d{8}$/', $phone) === 1;
+            return preg_match('/^9\d{8}$/D', $phone) === 1;
         }
 
         return false;
     }
 
-    /**
-     * Calculates the remainder of a number when divided by a modulus.
-     *
-     * This function takes a number as a string and a modulus as a string,
-     * converts the modulus to an integer, and then calculates the remainder
-     * of the number when divided by the modulus using a manual division algorithm.
-     *
-     * @param string $number The number to be divided, represented as a string.
-     * @param string $modulus The modulus to divide by, represented as a string.
-     * @return int The remainder of the division.
-     */
+    /** Decimal-string remainder modulo 97, without BCMath or large integer casts. */
     public function genericBcmod(string $numericString): int
     {
-        $remainder = 0;
-        foreach (str_split($numericString, 9) as $chunk) {
-            $remainder = (int)(($remainder . $chunk) % 97);
+        if ($numericString === '' || !ctype_digit($numericString)) {
+            throw new \InvalidArgumentException('Expected a non-empty decimal string.');
         }
-        return $remainder;
+
+        return Checksum::mod97($numericString);
     }
 
-    /**
-     * Retrieves the name of a financial institution based on the provided ISPB (Identificador de Sistema de Pagamentos Brasileiro).
-     *
-     * @return array An associative array where the key is the ISPB code and the value is the name of the financial institution.
-     */
+    /** Historical ISPB code-to-name map, replaced by config['ispb'] when supplied. */
     public function getIspbList(): array
     {
+        if (isset($this->config['ispb'])) {
+            if (!is_array($this->config['ispb'])) {
+                throw new \InvalidArgumentException('The ispb configuration must be a code-to-name array.');
+            }
+            return $this->config['ispb'];
+        }
+
+        // Historical bundled snapshot; use configuration for an up-to-date directory.
         return [
             '00000000' => 'BCO DO BRASIL S.A.',
             '00000208' => 'BRB - BCO DE BRASILIA S.A.',

@@ -25,7 +25,7 @@ class CurrencyTest extends TestCase
     {
         $this->assertTrue($this->currencyValidator->brlFormat('R$ 1.234,56'));
         $this->assertTrue($this->currencyValidator->brlFormat('R$123,45'));
-        $this->assertFalse($this->currencyValidator->brlFormat('1234,56')); // Missing R$
+        $this->assertTrue($this->currencyValidator->brlFormat('1234,56')); // Thousands grouping and R$ are optional.
         $this->assertFalse($this->currencyValidator->brlFormat('R$ 1234.56')); // Invalid separator
     }
 

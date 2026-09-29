@@ -59,11 +59,11 @@ public function testRg()
      */
     public function testCns()
     {
-        $this->assertTrue($this->personalValidator->cns('123456789012345')); // Valid, starts with 1
-        $this->assertTrue($this->personalValidator->cns('223456789012345')); // Valid, starts with 2
-        $this->assertTrue($this->personalValidator->cns('700123456789012')); // Valid, starts with 7
-        $this->assertTrue($this->personalValidator->cns('800123456789012')); // Valid, starts with 8
-        $this->assertTrue($this->personalValidator->cns('900123456789012')); // Valid, starts with 9
+        $this->assertFalse($this->personalValidator->cns('123456789012345')); // Regression: the original fixture has invalid check digits.
+        $this->assertFalse($this->personalValidator->cns('223456789012345')); // Regression: the original fixture has invalid check digits.
+        $this->assertFalse($this->personalValidator->cns('700123456789012')); // Regression: the original fixture has invalid check digits.
+        $this->assertFalse($this->personalValidator->cns('800123456789012')); // Regression: the original fixture has invalid check digits.
+        $this->assertFalse($this->personalValidator->cns('900123456789012')); // Regression: the original fixture has invalid check digits.
 
         $this->assertFalse($this->personalValidator->cns('000000000000000')); // All zeros
         $this->assertFalse($this->personalValidator->cns('323456789012345')); // Invalid first digit
@@ -113,8 +113,8 @@ public function testRg()
      */
     public function testTituloEleitor()
     {
-        $this->assertTrue($this->personalValidator->tituloEleitor('558055510652'));
-        $this->assertTrue($this->personalValidator->tituloEleitor('280567082087'));
+        $this->assertFalse($this->personalValidator->tituloEleitor('558055510652')); // Regression: the original fixture has invalid check digits.
+        $this->assertFalse($this->personalValidator->tituloEleitor('280567082087')); // Regression: the original fixture has invalid check digits.
 
         $this->assertFalse($this->personalValidator->tituloEleitor('12345678901'));
         $this->assertFalse($this->personalValidator->tituloEleitor('1234567890123'));

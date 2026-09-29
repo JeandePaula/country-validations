@@ -26,4 +26,14 @@ class Validator
     {
         return new Personal($this->config);
     }
+
+    public function address(): Address
+    {
+        return new Address();
+    }
+
+    public function bank(): Bank
+    {
+        return new Bank($this->config);
+    }
 }

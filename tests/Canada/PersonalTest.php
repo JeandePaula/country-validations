@@ -102,7 +102,10 @@ class PersonalTest extends TestCase
     public function testDriversLicense()
     {
         $this->assertTrue($this->personalValidator->driversLicense('1234567', 'AB'));
-        $this->assertTrue($this->personalValidator->driversLicense('A123456', 'ON'));
+        $this->assertTrue($this->personalValidator->driversLicense('A12345678901234', 'ON'));
+        $this->assertTrue($this->personalValidator->driversLicense('A123456789012', 'QC'));
+        $this->assertFalse($this->personalValidator->driversLicense('A123456', 'ON'));
+        $this->assertFalse($this->personalValidator->driversLicense('A123456789', 'QC'));
         $this->assertFalse($this->personalValidator->driversLicense('123456', 'ON')); // Invalid for Ontario
         $this->assertFalse($this->personalValidator->driversLicense('ABCDEFG', 'QC')); // Invalid for Quebec
     }

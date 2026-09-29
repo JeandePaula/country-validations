@@ -52,4 +52,22 @@ class CountryValidator
     {
         return new UsaValidator($this->config);
     }
+
+    /** @return BrazilValidator|CanadaValidator|UsaValidator */
+    public function country(string $code)
+    {
+        switch (strtoupper($code)) {
+            case 'BR':
+            case 'BRA':
+                return $this->brazil();
+            case 'CA':
+            case 'CAN':
+                return $this->canada();
+            case 'US':
+            case 'USA':
+                return $this->usa();
+            default:
+                throw new \InvalidArgumentException('Unsupported country: ' . $code);
+        }
+    }
 }

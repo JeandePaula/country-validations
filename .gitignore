@@ -1,2 +1,6 @@
+/vendor/
+/composer.lock
+/.phpunit.result.cache
+/coverage/
 docker-compose.yml
 dockerfile

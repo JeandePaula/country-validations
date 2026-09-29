@@ -70,4 +70,9 @@ class Validator
     {
         return new Vehicle($this->config);
     }
+
+    public function address(): Address
+    {
+        return new Address();
+    }
 }
